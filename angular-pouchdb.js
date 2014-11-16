@@ -81,10 +81,14 @@ THE SOFTWARE.
               deferred = $q.defer();
               args = arguments != null ? slice.call(arguments) : [];
               fn.apply(this, args).then(function(res) {
-                deferred.resolve(res);
+                $rootScope.$evalAsync(function() {
+                  return deferred.resolve(res);
+                });
                 return $rootScope.$apply();
               })["catch"](function(err) {
-                deferred.reject(err);
+                $rootScope.$evalAsync(function() {
+                  return deferred.reject(err);
+                });
                 return $rootScope.$apply();
               });
               return deferred.promise;
@@ -107,22 +111,25 @@ THE SOFTWARE.
                   changes = db.changes(options);
                   deferred = $q.defer();
                   changes.on('change', function(change) {
-                    return $timeout(function() {
+                    $rootScope.$evalAsync(function() {
                       return deferred.notify({
                         change: change,
                         changes: changes
                       });
                     });
+                    return $rootScope.apply();
                   });
                   changes.on('complete', function(res) {
-                    return $timeout(function() {
+                    $rootScope.$evalAsync(function() {
                       return deferred.resolve(res);
                     });
+                    return $rootScope.apply();
                   });
                   changes.on('err', function(err) {
-                    return $timeout(function() {
+                    $rootScope.$evalAsync(function() {
                       return deferred.reject(err);
                     });
+                    return $rootScope.apply();
                   });
                   return deferred.promise;
                 },

@@ -62,7 +62,7 @@ describe('pouchdb', function () {
   });
 
 
-  iit('should support replication from remote', function (done) {
+  it('should support replication from remote', function (done) {
     recreate('local3', function(local) {
       recreate('http://localhost:5984/remote3', function(remote3) {
         remote3.replicate.to(local, {

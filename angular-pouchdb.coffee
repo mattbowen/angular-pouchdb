@@ -68,10 +68,10 @@ pouchdb.provider 'pouchdb', ->
         args = if arguments? then slice.call(arguments) else []
         fn.apply(this, args)
           .then((res) ->
-            deferred.resolve res
+            $rootScope.$evalAsync(-> deferred.resolve res)
             $rootScope.$apply())
           .catch((err) ->
-            deferred.reject err
+            $rootScope.$evalAsync(-> deferred.reject err)
             $rootScope.$apply())
         deferred.promise      
 
@@ -88,14 +88,17 @@ pouchdb.provider 'pouchdb', ->
         changes = db.changes options
         deferred = $q.defer()
         changes.on 'change', (change) ->
-          $timeout () ->
+          $rootScope.$evalAsync () ->
             deferred.notify {change: change, changes: changes}
+          $rootScope.apply()
         changes.on 'complete', (res) ->
-          $timeout () ->
+          $rootScope.$evalAsync ->
             deferred.resolve res
+          $rootScope.apply()
         changes.on 'err', (err) ->
-          $timeout () ->
+          $rootScope.$evalAsync ->
             deferred.reject(err)
+          $rootScope.apply()
         deferred.promise
       putAttachment: qify db.putAttachment.bind(db)
       getAttachment: qify db.getAttachment.bind(db)
