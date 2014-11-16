@@ -67,8 +67,8 @@ pouchdb.provider 'pouchdb', ->
         deferred = $q.defer()
         args = if arguments? then slice.call(arguments) else []
         fn.apply(this, args)
-          .then((res) -> $rootScope.$applyAsync(-> deferred.resolve res))
-          .catch((err) -> $rootScope.$applyAsync(-> deferred.reject err))
+          .then((res) -> $rootScope.$evalAsync(-> deferred.resolve res))
+          .catch((err) -> $rootScope.$evalAsync(-> deferred.reject err))
         deferred.promise      
 
     create: (name, options) ->

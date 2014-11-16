@@ -81,11 +81,11 @@ THE SOFTWARE.
               deferred = $q.defer();
               args = arguments != null ? slice.call(arguments) : [];
               fn.apply(this, args).then(function(res) {
-                return $rootScope.$applyAsync(function() {
+                return $rootScope.$evalAsync(function() {
                   return deferred.resolve(res);
                 });
               })["catch"](function(err) {
-                return $rootScope.$applyAsync(function() {
+                return $rootScope.$evalAsync(function() {
                   return deferred.reject(err);
                 });
               });
