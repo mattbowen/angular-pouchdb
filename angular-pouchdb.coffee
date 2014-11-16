@@ -65,15 +65,10 @@ pouchdb.provider 'pouchdb', ->
     qify = (fn) ->
       () ->
         deferred = $q.defer()
-        callback = (err, res) ->
-          $timeout () ->
-            if (err)
-              deferred.reject err
-            else
-              deferred.resolve res
         args = if arguments? then slice.call(arguments) else []
-        args.push callback
-        fn.apply this, args
+        fn.apply(this, args)
+          .then((res) -> $rootScope.$applyAsync(-> deferred.resolve res))
+          .catch((err) -> $rootScope.$applyAsync(-> deferred.reject err))
         deferred.promise      
 
     create: (name, options) ->
