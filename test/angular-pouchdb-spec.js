@@ -5,18 +5,21 @@
 
 describe('pouchdb', function () {
 
-  var pouchdb;
+  var pouchdb, $rootScope, scope;
 
   beforeEach(module('pouchdb'));
 
-  beforeEach(inject(function (_pouchdb_) {
+  beforeEach(inject(function (_pouchdb_, _$rootScope_) {
       pouchdb = _pouchdb_;
+      $rootScope = _$rootScope_;
+      scope = $rootScope.$new();
+
   }));
 
   function recreate(name, callback) {
     var db = new PouchDB(name);
     db.destroy().then(function() {
-      db = new PouchDB(name);
+      db = pouchdb.create(name);
       callback(db);
     })
   }
@@ -59,7 +62,7 @@ describe('pouchdb', function () {
   });
 
 
-  it('should support replication from remote', function (done) {
+  iit('should support replication from remote', function (done) {
     recreate('local3', function(local) {
       recreate('http://localhost:5984/remote3', function(remote3) {
         remote3.replicate.to(local, {
@@ -68,6 +71,7 @@ describe('pouchdb', function () {
               expect(value, "remote DID NOT replicate from remote").not.toBeNull();
               done();
             });
+            scope.$apply();
           }
         });
         remote3.put(doc);
@@ -76,7 +80,7 @@ describe('pouchdb', function () {
   });
 
 
-  it('should allow you to store and retrieve documents', function (done) {
+  iit('should allow you to store and retrieve documents', function (done) {
     recreate('test', function(db) {
       db.put(doc).then(function () {
         db.get(doc._id).then(function (result) {
